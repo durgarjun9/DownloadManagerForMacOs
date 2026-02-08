@@ -1,0 +1,15 @@
+.DS_Store
+.build/
+.swiftpm/
+*.app
+DerivedData/
+Packages/
+build/
+bin/
+obj/
+*.xcresult
+*.xcodeproj/
+xcuserdata/
+Workspace.xcworkspace/
+Pods/
+EOF
