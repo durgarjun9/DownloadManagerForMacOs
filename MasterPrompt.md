@@ -1,8 +1,9 @@
 # The Master Prompt
 --- 
 
-** Task ** :Architect and develop a high-performance, native macOS Download Manager named "DownloadManagerForMac."
+** Task ** : Build a high-performance, native macOS Download Manager named "DownloadManagerForMac."
 This application need to download files super fast.
+Build the full end to end application. Use Terminal to build / run the application.
 
 ---
 
@@ -36,3 +37,6 @@ This application need to download files super fast.
 > * A Swift "DownloadManager" class that acts as a bridge between the two engines.
 > * A SwiftUI view for the download queue.
 > * The configuration settings for libtorrent to ensure it is tuned for high-speed fiber connections (high peer limits and optimized cache).
+
+
+Also add Readme file. Give the instructions to run / build the application.
