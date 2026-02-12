@@ -9,7 +9,32 @@ public class DownloadManager: ObservableObject {
     
     public static let shared = DownloadManager()
     
-    private init() {}
+    @Published public var downloadPath: String = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Downloads").path {
+        didSet {
+            UserDefaults.standard.set(downloadPath, forKey: "DownloadPath")
+        }
+    }
+    
+    @Published public var speedLimitKBps: Int = 0 {
+        didSet {
+            UserDefaults.standard.set(speedLimitKBps, forKey: "SpeedLimitKBps")
+            applySpeedLimit()
+        }
+    }
+    
+    private init() {
+        if let savedPath = UserDefaults.standard.string(forKey: "DownloadPath") {
+            self.downloadPath = savedPath
+        }
+        self.speedLimitKBps = UserDefaults.standard.integer(forKey: "SpeedLimitKBps")
+        applySpeedLimit()
+    }
+    
+    private func applySpeedLimit() {
+        // speedLimitKBps 0 means unlimited
+        let limit = speedLimitKBps > 0 ? Int32(speedLimitKBps * 1024) : 0
+        torrentManager?.setDownloadLimit(limit)
+    }
     
     public func addDownload(url: URL) {
         let item = DownloadItem(url: url)
@@ -22,6 +47,42 @@ public class DownloadManager: ObservableObject {
         }
     }
     
+    public func pauseDownload(id: UUID) {
+        if let index = activeDownloads.firstIndex(where: { $0.id == id }) {
+            let item = activeDownloads[index]
+            if item.url.absoluteString.hasPrefix("magnet:") || item.url.pathExtension == "torrent" {
+                torrentManager?.pauseTorrent(forMagnet: item.url.absoluteString)
+            }
+            activeDownloads[index].status = .paused
+        }
+    }
+    
+    public func resumeDownload(id: UUID) {
+        if let index = activeDownloads.firstIndex(where: { $0.id == id }) {
+            let item = activeDownloads[index]
+            if item.url.absoluteString.hasPrefix("magnet:") || item.url.pathExtension == "torrent" {
+                torrentManager?.resumeTorrent(forMagnet: item.url.absoluteString)
+            }
+            activeDownloads[index].status = .downloading
+        }
+    }
+    
+    public func removeDownload(id: UUID) {
+        if let index = activeDownloads.firstIndex(where: { $0.id == id }) {
+            let item = activeDownloads[index]
+            if item.url.absoluteString.hasPrefix("magnet:") || item.url.pathExtension == "torrent" {
+                torrentManager?.removeTorrent(forMagnet: item.url.absoluteString)
+            }
+            activeDownloads.remove(at: index)
+        } else if let index = completedDownloads.firstIndex(where: { $0.id == id }) {
+            let item = completedDownloads[index]
+            if item.url.absoluteString.hasPrefix("magnet:") || item.url.pathExtension == "torrent" {
+                torrentManager?.removeTorrent(forMagnet: item.url.absoluteString)
+            }
+            completedDownloads.remove(at: index)
+        }
+    }
+    
     private func startHTTPDownload(_ item: DownloadItem) {
         let downloader = HTTPDownloader(item: item)
         downloader.start()
@@ -29,8 +90,7 @@ public class DownloadManager: ObservableObject {
     }
     
     private func startTorrentDownload(_ item: DownloadItem) {
-        let savePath = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Downloads").path
-        torrentManager?.addTorrent(withMagnet: item.url.absoluteString, withSavePath: savePath)
+        torrentManager?.addTorrent(withMagnet: item.url.absoluteString, withSavePath: downloadPath)
         
         // Track progress in a timer
         Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
@@ -43,6 +103,8 @@ public class DownloadManager: ObservableObject {
             let size = self.torrentManager?.totalSize(forMagnet: urlString) ?? 0
             
             if let index = self.activeDownloads.firstIndex(where: { $0.id == item.id }) {
+                guard self.activeDownloads[index].status != .paused else { return }
+                
                 self.activeDownloads[index].progress = Double(progress)
                 self.activeDownloads[index].speed = speed
                 self.activeDownloads[index].status = .downloading

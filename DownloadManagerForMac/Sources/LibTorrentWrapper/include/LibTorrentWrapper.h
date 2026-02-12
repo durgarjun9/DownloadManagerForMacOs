@@ -11,6 +11,11 @@
 - (double)getDownloadSpeedForMagnet:(NSString *)magnet NS_SWIFT_NAME(downloadSpeed(forMagnet:));
 - (NSString *)getNameForMagnet:(NSString *)magnet NS_SWIFT_NAME(name(forMagnet:));
 - (long long)getTotalSizeForMagnet:(NSString *)magnet NS_SWIFT_NAME(totalSize(forMagnet:));
+- (void)pauseTorrentForMagnet:(NSString *)magnet NS_SWIFT_NAME(pauseTorrent(forMagnet:));
+- (void)resumeTorrentForMagnet:(NSString *)magnet NS_SWIFT_NAME(resumeTorrent(forMagnet:));
+- (void)removeTorrentForMagnet:(NSString *)magnet NS_SWIFT_NAME(removeTorrent(forMagnet:));
+- (void)setDownloadLimit:(int)bytesPerSecond NS_SWIFT_NAME(setDownloadLimit(_:));
+- (void)setUploadLimit:(int)bytesPerSecond NS_SWIFT_NAME(setUploadLimit(_:));
 - (void)stopAll;
 
 @end

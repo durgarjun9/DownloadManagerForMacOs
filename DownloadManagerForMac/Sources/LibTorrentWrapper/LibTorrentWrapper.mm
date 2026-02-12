@@ -69,6 +69,37 @@
     return 0;
 }
 
+- (void)pauseTorrentForMagnet:(NSString *)magnet {
+    if (handles.count(magnet)) {
+        handles[magnet].pause();
+    }
+}
+
+- (void)resumeTorrentForMagnet:(NSString *)magnet {
+    if (handles.count(magnet)) {
+        handles[magnet].resume();
+    }
+}
+
+- (void)removeTorrentForMagnet:(NSString *)magnet {
+    if (handles.count(magnet)) {
+        session->remove_torrent(handles[magnet], lt::session::delete_files);
+        handles.erase(magnet);
+    }
+}
+
+- (void)setDownloadLimit:(int)bytesPerSecond {
+    lt::settings_pack pack;
+    pack.set_int(lt::settings_pack::download_rate_limit, bytesPerSecond);
+    session->apply_settings(pack);
+}
+
+- (void)setUploadLimit:(int)bytesPerSecond {
+    lt::settings_pack pack;
+    pack.set_int(lt::settings_pack::upload_rate_limit, bytesPerSecond);
+    session->apply_settings(pack);
+}
+
 - (void)stopAll {
     delete session;
 }
