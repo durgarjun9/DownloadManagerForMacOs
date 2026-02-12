@@ -43,50 +43,17 @@ swift build
 
 ### 3. Native Installation (Recommended)
 
-To install the application into your `/Applications` folder, run the following automated build and bundle script:
+Simply run the automated build and installation script:
 
 ```bash
-# Build in Release mode
-swift build -c release
-
-# Create the App Bundle structure
-APP_NAME="DownloadManager"
-BUILD_PATH=".build/release/DownloadManagerApp"
-
-mkdir -p "$APP_NAME.app/Contents/MacOS"
-mkdir -p "$APP_NAME.app/Contents/Resources"
-
-# Copy binary to bundle
-cp "$BUILD_PATH" "$APP_NAME.app/Contents/MacOS/$APP_NAME"
-
-# Generate Info.plist
-cat <<EOF > "$APP_NAME.app/Contents/Info.plist"
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>CFBundleExecutable</key>
-    <string>\$APP_NAME</string>
-    <key>CFBundleIdentifier</key>
-    <string>com.downloadmanager.mac</string>
-    <key>CFBundleName</key>
-    <string>\$APP_NAME</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>CFBundleShortVersionString</key>
-    <string>1.0</string>
-    <key>LSMinimumSystemVersion</key>
-    <string>14.0</string>
-    <key>NSHighResolutionCapable</key>
-    <true/>
-</dict>
-</plist>
-EOF
-
-# Move to Applications folder
-rm -rf /Applications/DownloadManager.app
-mv DownloadManager.app /Applications/
+chmod +x build_and_install.sh
+./build_and_install.sh
 ```
+
+This script will:
+- Build the app in release mode.
+- Create the proper macOS `.app` bundle.
+- Install it directly to your `/Applications` folder.
 
 ### 4. Running the Application
 

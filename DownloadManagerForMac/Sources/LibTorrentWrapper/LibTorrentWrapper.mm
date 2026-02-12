@@ -43,6 +43,32 @@
     return 0.0;
 }
 
+- (double)getDownloadSpeedForMagnet:(NSString *)magnet {
+    if (handles.count(magnet)) {
+        lt::torrent_status s = handles[magnet].status();
+        return (double)s.download_rate;
+    }
+    return 0.0;
+}
+
+- (NSString *)getNameForMagnet:(NSString *)magnet {
+    if (handles.count(magnet)) {
+        lt::torrent_status s = handles[magnet].status();
+        if (!s.name.empty()) {
+            return [NSString stringWithUTF8String:s.name.c_str()];
+        }
+    }
+    return @"";
+}
+
+- (long long)getTotalSizeForMagnet:(NSString *)magnet {
+    if (handles.count(magnet)) {
+        lt::torrent_status s = handles[magnet].status();
+        return (long long)s.total_wanted;
+    }
+    return 0;
+}
+
 - (void)stopAll {
     delete session;
 }

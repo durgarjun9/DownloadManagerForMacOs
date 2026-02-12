@@ -7,7 +7,7 @@ public enum DownloadStatus: String, Codable {
 public struct DownloadItem: Identifiable, Codable {
     public let id: UUID
     public let url: URL
-    public let fileName: String
+    public var fileName: String
     public var status: DownloadStatus
     public var progress: Double
     public var totalSize: Int64
@@ -17,7 +17,7 @@ public struct DownloadItem: Identifiable, Codable {
     public init(url: URL) {
         self.id = UUID()
         self.url = url
-        self.fileName = url.lastPathComponent
+        self.fileName = url.lastPathComponent.isEmpty ? "Initializing..." : url.lastPathComponent
         self.status = .pending
         self.progress = 0
         self.totalSize = 0

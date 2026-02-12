@@ -35,12 +35,29 @@ public class DownloadManager: ObservableObject {
         // Track progress in a timer
         Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
             guard let self = self else { return }
-            let progress = self.torrentManager?.getDownloadProgress(forMagnet: item.url.absoluteString) ?? 0.0
+            
+            let urlString = item.url.absoluteString
+            let progress = self.torrentManager?.downloadProgress(forMagnet: urlString) ?? 0.0
+            let speed = self.torrentManager?.downloadSpeed(forMagnet: urlString) ?? 0.0
+            let name = self.torrentManager?.name(forMagnet: urlString) ?? ""
+            let size = self.torrentManager?.totalSize(forMagnet: urlString) ?? 0
             
             if let index = self.activeDownloads.firstIndex(where: { $0.id == item.id }) {
                 self.activeDownloads[index].progress = Double(progress)
+                self.activeDownloads[index].speed = speed
+                self.activeDownloads[index].status = .downloading
+                
+                if !name.isEmpty && self.activeDownloads[index].fileName == "Initializing..." {
+                    self.activeDownloads[index].fileName = name
+                }
+                
+                if size > 0 {
+                    self.activeDownloads[index].totalSize = size
+                }
+                
                 if progress >= 1.0 {
-                    let completed = self.activeDownloads.remove(at: index)
+                    var completed = self.activeDownloads.remove(at: index)
+                    completed.status = .completed
                     self.completedDownloads.append(completed)
                     timer.invalidate()
                 }

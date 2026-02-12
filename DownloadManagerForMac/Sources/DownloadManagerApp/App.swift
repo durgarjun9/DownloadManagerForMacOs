@@ -33,21 +33,23 @@ struct ContentView: View {
             .listStyle(.sidebar)
             .navigationTitle("DownloadManager")
         } detail: {
-            if let tab = selectedTab {
-                switch tab {
-                case "Dashboard":
+            NavigationStack {
+                if let tab = selectedTab {
+                    switch tab {
+                    case "Dashboard":
+                        DashboardView()
+                    case "Search":
+                        SearchView()
+                    case "History":
+                        HistoryView()
+                    case "Settings":
+                        SettingsView()
+                    default:
+                        Text("Select a view")
+                    }
+                } else {
                     DashboardView()
-                case "Search":
-                    SearchView()
-                case "History":
-                    HistoryView()
-                case "Settings":
-                    SettingsView()
-                default:
-                    Text("Select a view")
                 }
-            } else {
-                DashboardView()
             }
         }
     }
@@ -75,15 +77,33 @@ struct DownloadDetailsView: View {
             Section("File Information") {
                 LabeledContent("Name", value: item.fileName)
                 LabeledContent("URL", value: item.url.absoluteString)
-                LabeledContent("Size", value: "\(item.totalSize / 1024 / 1024) MB")
+                LabeledContent("Size", value: formatBytes(item.totalSize))
             }
             Section("Status") {
                 LabeledContent("Status", value: item.status.rawValue.capitalized)
                 LabeledContent("Progress", value: "\(Int(item.progress * 100))%")
+                LabeledContent("Speed", value: formatSpeed(item.speed))
                 LabeledContent("Download Path", value: "~/Downloads/\(item.fileName)")
             }
         }
-        .navigationTitle("Details: \(item.fileName)")
+        .navigationTitle("Details")
+    }
+    
+    private func formatBytes(_ bytes: Int64) -> String {
+        let formatter = ByteCountFormatter()
+        formatter.allowedUnits = [.useAll]
+        formatter.countStyle = .file
+        return formatter.string(fromByteCount: bytes)
+    }
+    
+    private func formatSpeed(_ bytesPerSecond: Double) -> String {
+        if bytesPerSecond < 1024 {
+            return String(format: "%.1f B/s", bytesPerSecond)
+        } else if bytesPerSecond < 1024 * 1024 {
+            return String(format: "%.1f KB/s", bytesPerSecond / 1024)
+        } else {
+            return String(format: "%.1f MB/s", bytesPerSecond / (1024 * 1024))
+        }
     }
 }
 
@@ -112,6 +132,7 @@ struct DashboardView: View {
                         HStack {
                             Text(item.fileName)
                                 .font(.headline)
+                                .lineLimit(1)
                             Spacer()
                             Text("\(Int(item.progress * 100))%")
                         }
@@ -119,7 +140,7 @@ struct DashboardView: View {
                         HStack {
                             Text(item.status.rawValue.capitalized)
                             Spacer()
-                            Text("Speed: 0 KB/s") // Placeholder
+                            Text(formatSpeed(item.speed))
                         }
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -127,6 +148,17 @@ struct DashboardView: View {
                 }
                 .padding(.vertical, 4)
             }
+        }
+        .navigationTitle("Dashboard")
+    }
+    
+    private func formatSpeed(_ bytesPerSecond: Double) -> String {
+        if bytesPerSecond < 1024 {
+            return String(format: "%.1f B/s", bytesPerSecond)
+        } else if bytesPerSecond < 1024 * 1024 {
+            return String(format: "%.1f KB/s", bytesPerSecond / 1024)
+        } else {
+            return String(format: "%.1f MB/s", bytesPerSecond / (1024 * 1024))
         }
     }
 }
