@@ -37,7 +37,6 @@ brew install libtorrent-rasterbar
 Navigate to the project directory and run:
 
 ```bash
-cd DownloadManagerForMac
 swift build
 ```
 
