@@ -66,5 +66,3 @@ This script will:
 - **C++/Swift Bridge**: A custom wrapper for `libtorrent` functionality.
 - **Dynamic Segmentation**: HTTP downloads dynamically re-assign ranges to optimize speed.
 
-## License
-MIT
