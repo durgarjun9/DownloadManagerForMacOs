@@ -32,15 +32,7 @@ You'll need `libtorrent-rasterbar` installed on your Mac:
 brew install libtorrent-rasterbar
 ```
 
-### 2. Build via Terminal
-
-Navigate to the project directory and run:
-
-```bash
-swift build
-```
-
-### 3. Native Installation (Recommended)
+### 2. Native Installation (Recommended)
 
 Simply run the automated build and installation script:
 
@@ -53,12 +45,6 @@ This script will:
 - Build the app in release mode.
 - Create the proper macOS `.app` bundle.
 - Install it directly to your `/Applications` folder.
-
-### 4. Running the Application
-
-- **Via Terminal**: `swift run DownloadManagerApp`
-- **Via Applications**: Open `DownloadManager` from your Applications folder or Spotlight.
-  - *Note: On first launch, right-click the app in Applications and select "Open" to bypass the unidentified developer warning.*
 
 ## Implementation Details
 
