@@ -19,7 +19,7 @@ A high-performance, native macOS Download Manager with dual-engine support for H
 ## Requirements
 
 - macOS 14+ (Sonoma or later)
-- Xcode 15 or later
+- Xcode 15 or later (Only For Development)
 - Homebrew (to install dependencies)
 
 ## Setup & Build Instructions
